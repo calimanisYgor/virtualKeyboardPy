@@ -1,6 +1,7 @@
 # virtualKeyboardPy
 
-O virtualKeyboardPy é um projeto de visão computacional feito em python que busca criar um teclado virtual que será acessado com as coordenadas das mãos
+O virtualKeyboardPy é um projeto de visão computacional feito em python que busca criar um teclado virtual que será acessado com as coordenadas das mãos. 
+Um teclado virtual é essencial para acessibilidade, pois permite que pessoas com deficiências possam usar dispositivos digitais sem depender de teclados físicos
 
 ## Tecnologias:
 Para esse projeto serão utilizadas as seguintes tecnologias:
