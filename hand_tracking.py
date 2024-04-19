@@ -8,38 +8,67 @@ mp_draw = mp.solutions.drawing_utils
 # Inicialização do modelo de detecção de mãos
 hands = mp_hands.Hands()
 
-# Inicialização da captura de vídeo da webcam
+# Inicialização da câmera
 camera = cv2.VideoCapture(0)
 
-# Configuração da resolução da imagem da câmera
+# Configuração da resolução da imagem
 resolution_x = 1280
 resolution_y = 720
 camera.set(cv2.CAP_PROP_FRAME_WIDTH, resolution_x)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution_y)
 
-# Loop para mostrar a imagem em tempo real
-while True:
-    # Captura de um frame da câmera
-    success, img = camera.read()
+
+def find_hands_coordinates(img):
+    # Converte a imagem para RGB (mediapipe requer RGB)
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # Processamento da imagem para detecção de mãos
     result = hands.process(img_rgb)
 
-    # Verificação se há mãos detectadas na imagem
+    all_hands = [] # dicionário que irá armazenar as informações de todas as mãos
+
+    # Verifica se há mãos detectadas na imagem
     if result.multi_hand_landmarks:
-        # Desenho dos pontos e conexões das mãos na imagem
+        # Desenha os pontos e conexões das mãos na imagem
         for hand_marks in result.multi_hand_landmarks:
+            # Coleta as coordenadas
+            hand_info = {}
+            coordinates = []
+            for mark in hand_marks.landmark:
+                coord_x, coord_y, coord_z = (
+                    int(mark.x * resolution_x),  # Largura
+                    int(mark.y * resolution_y),  # Altura
+                    int(mark.z * resolution_x),  # Profundidade
+                )
+                coordinates.append(
+                    (coord_x, coord_y, coord_z)
+                )  # Armazena todas as coordenadas da mão em uma lista
+
+            hand_info["coordenadas"] = coordinates
+            all_hands.append(hand_info)
+
+            # Desenha os landmarks e conexões das mãos na imagem
             mp_draw.draw_landmarks(img, hand_marks, mp_hands.HAND_CONNECTIONS)
 
-    # Exibição da imagem em uma janela chamada "Imagem"
+    return img, all_hands
+
+
+# Loop para mostrar a imagem em tempo real
+while True:
+    # Captura de um frame da câmera
+    success, img = camera.read()
+
+    # Encontra e desenha as coordenadas das mãos na imagem
+    img, all_hands = find_hands_coordinates(img)
+
+    # Mostra a imagem em uma janela
     cv2.imshow("Imagem", img)
 
     # Aguarda um determinado tempo e verifica se a tecla "ESC" foi pressionada para sair do loop
     key = cv2.waitKey(1)
-    if key == 27:  # "ESC" é o número 27 na tabela ASCII
+    if key == 27:
         break
 
-# Liberação dos recursos utilizados
+# Libera a câmera e fecha todas as janelas
 camera.release()
 cv2.destroyAllWindows()
