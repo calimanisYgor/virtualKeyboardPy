@@ -18,7 +18,7 @@ camera.set(cv2.CAP_PROP_FRAME_WIDTH, resolution_x)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution_y)
 
 
-def find_hands_coordinates(img):
+def find_hands_coordinates(img, side_inverted = False):
     # Converte a imagem para RGB (mediapipe requer RGB)
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -30,11 +30,11 @@ def find_hands_coordinates(img):
     # Verifica se há mãos detectadas na imagem
     if result.multi_hand_landmarks:
         # Desenha os pontos e conexões das mãos na imagem
-        for hand_marks in result.multi_hand_landmarks:
+        for side_hand, hand_marks in zip(result.multi_handedness, result.multi_hand_landmarks):
             # Coleta as coordenadas
             hand_info = {}
             coordinates = []
-            for mark in hand_marks.landmark:
+            for  mark in hand_marks.landmark:
                 coord_x, coord_y, coord_z = (
                     int(mark.x * resolution_x),  # Largura
                     int(mark.y * resolution_y),  # Altura
@@ -45,6 +45,20 @@ def find_hands_coordinates(img):
                 )  # Armazena todas as coordenadas da mão em uma lista
 
             hand_info["coordenadas"] = coordinates
+
+            # checando se o lado está invertido 
+            if side_inverted:
+                # invertendo os valores
+                if side_hand.classification[0].label == 'Left':
+                   hand_info['lado'] = 'Right'
+                else:
+                    side_hand.classification[0].label = 'Right'
+            else:
+                hand_info['lado'] = side_hand.classification[0].label
+                
+            # acessando informação sobre qual é o lado da mão
+            print(side_hand.classification[0].label)
+
             all_hands.append(hand_info)
 
             # Desenha os landmarks e conexões das mãos na imagem
@@ -57,6 +71,8 @@ def find_hands_coordinates(img):
 while True:
     # Captura de um frame da câmera
     success, img = camera.read()
+    # invertendo a imagem
+    img = cv2.flip(img, 1) # 1 - inverte a esquerda pela direita
 
     # Encontra e desenha as coordenadas das mãos na imagem
     img, all_hands = find_hands_coordinates(img)
