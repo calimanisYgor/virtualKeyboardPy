@@ -7,6 +7,7 @@ Um teclado virtual é essencial para acessibilidade, pois permite que pessoas co
 Para esse projeto serão utilizadas as seguintes tecnologias:
 - Biblioteca OpenCv
 - Biblioteca MediaPipe
+- Biblioteca TensorFlow
 - Anaconda
 
 Este projeto realizará a captura da imagem através de uma webcam, portanto para o funcionamento do programa tenha uma webcam instalada.
