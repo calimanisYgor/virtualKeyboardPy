@@ -2,6 +2,14 @@ import cv2
 import mediapipe as mp
 import os
 
+# CONSTANTES DE CORES QUE VÃO SER UTILIZADAS
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+AZUL = (255, 0, 0)
+VERDE = (0, 255, 0)
+VERMELHO = (0, 0, 255)
+AZUL_CLARO = (255, 255, 0)
+
 # Inicialização das soluções do mediapipe para detecção de mãos
 mp_hands = mp.solutions.hands
 mp_draw = mp.solutions.drawing_utils
@@ -108,6 +116,11 @@ while True:
 
     # Encontra e desenha as coordenadas das mãos na imagem
     img, all_hands = find_hands_coordinates(img)
+
+    # desenhando o retangulo do teclado
+    cv2.rectangle(img, (50, 50), (100, 100), BRANCO, cv2.FILLED)
+    # escrevendo a letra Q
+    cv2.putText(img, 'Q', (65,85), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
 
     if len(all_hands) == 1:
         info_finger_hand1 = raised_fingers(all_hands[0])
