@@ -28,6 +28,14 @@ camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution_y)
 notepad = False
 chrome = False
 calculadora = False
+teclas = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["Z", "X", "C", "V", "B", "N", "M", ",", ".", " "],
+]
+offset = 50
+contador = 0
+texto = ">"
 
 
 def find_hands_coordinates(img, side_inverted=False):
@@ -107,6 +115,30 @@ def raised_fingers(hand):
     return fingers
 
 
+def print_buttons(img, position, letter, size=50, rectangle_color=BRANCO):
+    # desenhando o retangulo do teclado
+    cv2.rectangle(
+        img,
+        position,
+        (position[0] + size, position[1] + size),
+        rectangle_color,
+        cv2.FILLED,
+    )
+    # adicionando uma borda
+    cv2.rectangle(img, position, (position[0] + size, position[1] + size), AZUL, 1)
+    # escrevendo as letras
+    cv2.putText(
+        img,
+        letter,
+        (position[0] + 15, position[1] + 30),
+        cv2.FONT_HERSHEY_COMPLEX,
+        1,
+        PRETO,
+        2,
+    )
+    return img
+
+
 # Loop para mostrar a imagem em tempo real
 while True:
     # Captura de um frame da câmera
@@ -117,13 +149,60 @@ while True:
     # Encontra e desenha as coordenadas das mãos na imagem
     img, all_hands = find_hands_coordinates(img)
 
-    # desenhando o retangulo do teclado
-    cv2.rectangle(img, (50, 50), (100, 100), BRANCO, cv2.FILLED)
-    # escrevendo a letra Q
-    cv2.putText(img, 'Q', (65,85), cv2.FONT_HERSHEY_COMPLEX, 1, PRETO, 2)
-
     if len(all_hands) == 1:
         info_finger_hand1 = raised_fingers(all_hands[0])
+        # só aparece o teclado se for a mão esquerda
+        if all_hands[0]["lado"] == "Left":
+            # acessando coordenadas do indicador
+            indicador_x, indicador_y, indicador_z = all_hands[0]["coordenadas"][8]
+            cv2.putText(
+                img,
+                f"Distancia camera: {indicador_z}",
+                (850, 50),
+                cv2.FONT_HERSHEY_COMPLEX,
+                1,
+                BRANCO,
+                2,
+            )
+
+            # inserindo as letras no teclado virtual
+            for indice_linha, linha_teclado in enumerate(teclas):
+                for indice, letra in enumerate(linha_teclado):
+                    # mecanismo para alternar entre maiusculo e minusculo
+                    if sum(info_finger_hand1) <= 1:
+                        letra = letra.lower()
+                    img = print_buttons(
+                        img, (offset + indice * 80, offset + indice_linha * 80), letra
+                    )
+                    # checar se as coordenadas do indicador estão posicionadas dentro da região da tecla
+                    if (
+                        offset + indice * 80 < indicador_x < 100 + indice * 50
+                        and offset + indice_linha * 80
+                        < indicador_y
+                        < 100 + indice_linha * 80
+                    ):
+                        # modificando a cor da tecla se o dedo estiver em cima
+                        img = print_buttons(
+                            img,
+                            (offset + indice * 80, offset + indice_linha * 80),
+                            letra,
+                            rectangle_color=VERDE,
+                        )
+                        if indicador_z < -85:
+                            contador = 1
+                            escreve = letra
+                            img = print_buttons(
+                                img,
+                                (offset + indice * 80, offset + indice_linha * 80),
+                                letra,
+                                rectangle_color=AZUL_CLARO,
+                            )
+            if contador:
+                contador += 1
+                if contador == 3:
+                    texto += escreve
+                    contador = 0
+
         # só executa se for a mão direita
         if all_hands[0]["lado"] == "Right":
             # abrindo o notepad com o indicador
