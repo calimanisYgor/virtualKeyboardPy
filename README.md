@@ -23,4 +23,5 @@ Utilizaremos o Anaconda para simplificar o gerenciamento e implantação dos pac
 ```
 pip install opencv-python
 pip install mediapipe
+pip install pynput
 ```
