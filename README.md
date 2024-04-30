@@ -6,7 +6,7 @@ O virtualKeyboardPy é um projeto de visão computacional em Python que visa cri
 
 O código em Python utiliza as bibliotecas OpenCV e MediaPipe, junto com os módulos do MediaPipe Hands, para detectar e rastrear as mãos em uma imagem de vídeo da câmera. Isso permite a interação com o teclado virtual, onde os gestos das mãos são mapeados para a digitação de texto e controle de aplicativos.
 
-## Tecnologias Utilizadas
+## 💻 Tecnologias Utilizadas
 
 - **OpenCV**: Biblioteca para processamento de imagens e vídeos.
 - **MediaPipe**: Framework para visão computacional, incluindo detecção de mãos.
@@ -17,7 +17,7 @@ O código em Python utiliza as bibliotecas OpenCV e MediaPipe, junto com os mód
 
 Para executar este projeto, é necessário ter uma webcam instalada no computador.
 
-## Instalação
+## 🚀 Instalação
 
 Para instalar as dependências necessárias, siga estes passos:
 
