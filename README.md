@@ -1,6 +1,4 @@
-Claro, aqui está uma versão melhorada do README para o projeto virtualKeyboardPy:
 
----
 
 # virtualKeyboardPy
 
